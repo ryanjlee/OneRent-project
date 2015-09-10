@@ -4,42 +4,63 @@ App = React.createClass
     headings: ['_id', 'type', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
     listings: []
     page: 0
+    field: '_id'
+    order: 1
 
-  getListings: (page) ->
+  getListings: (page, field, order) ->
     tableData =
       page: page
       pageSize: 15
-    $.get 'listings.json', tableData, ((listings)->
+      field: field
+      order: order
+
+    $.get 'listings.json', tableData, ((listings) ->
       this.setState
         listings: listings
         page: page
+        field: field
+        order: order
       return
     ).bind this
 
   componentDidMount: ->
-    this.getListings(this.state.page)
+    this.getListings(this.state.page, this.state.field, this.state.order)
 
-  handleClick: (direction)->
+  onPageEvent: (direction) ->
     if direction == 'Next'
-      this.getListings(this.state.page + 1)
+      newPage = this.state.page + 1
     else if direction == 'Previous' and this.state.page > 0
-      this.getListings(this.state.page - 1)
+      newPage = this.state.page - 1
+    else
+      return
+    this.getListings(newPage, this.state.field, this.state.order)
+    return
+
+  onSortEvent: (selectedField) ->
+    if selectedField != this.state.field
+      order = this.state.order
+      field = selectedField
+    else
+      order = this.state.order * -1
+      field = this.state.field
+    this.getListings(this.state.page, field, order)
     return
 
   render: ->
     <div className= 'app'>
       <h1>OneRent Listings</h1>
-      <ListingsTable listings= {this.state.listings} headings= {this.state.headings} />
-      <Arrows onClickEvent= {this.handleClick}  page= {this.state.page}/>
+      <ListingsTable listings= {this.state.listings} headings= {this.state.headings} onSortEvent= {this.onSortEvent}/>
+      <Arrows onPageEvent= {this.onPageEvent}  page= {this.state.page}/>
     </div>
 
 
 ListingsTable = React.createClass
   render: ->
-    tableHeadings = this.props.headings.map (heading) ->
-      <ListingHeading>
+    tableHeadings = this.props.headings.map ((heading) ->
+      <ListingHeading onSortEvent= {this.props.onSortEvent}>
         {heading}
       </ListingHeading>
+    ).bind this
 
     tableRows = this.props.listings.map ((listing) ->      
       <ListingRow headings= {this.props.headings}>
@@ -60,8 +81,13 @@ ListingsTable = React.createClass
 
 
 ListingHeading = React.createClass
+  handleSortRequest: (e) ->
+    this.props.onSortEvent(e.target.innerText)
+
   render: ->
-    <th>{this.props.children}</th>
+    <th onClick= {this.handleSortRequest}>
+      {this.props.children}
+    </th>
 
 
 ListingRow = React.createClass
@@ -83,13 +109,14 @@ ListingCell = React.createClass
 
 
 Arrows = React.createClass
-  handleClick: (e)->
-    this.props.onClickEvent(e.target.value)
+  handlePageRequest: (e) ->
+    this.props.onPageEvent(e.target.value)
+
   render: ->
     <div className= 'buttons'>
-      <input type= 'button' value= 'Previous' onClick= {this.handleClick} />
-      <input type= 'button' value= 'Next' onClick= {this.handleClick} />
-      {this.props.page}
+      <input type= 'button' value= 'Previous' onClick= {this.handlePageRequest} />
+      <input type= 'button' value= 'Next' onClick= {this.handlePageRequest} />
+      {this.props.page + 1}
     </div>
 
 

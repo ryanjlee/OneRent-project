@@ -7,40 +7,62 @@
       return {
         headings: ['_id', 'type', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id'],
         listings: [],
-        page: 0
+        page: 0,
+        field: '_id',
+        order: 1
       };
     },
-    getListings: function(page) {
+    getListings: function(page, field, order) {
       var tableData;
       tableData = {
         page: page,
-        pageSize: 15
+        pageSize: 15,
+        field: field,
+        order: order
       };
       return $.get('listings.json', tableData, (function(listings) {
         this.setState({
           listings: listings,
-          page: page
+          page: page,
+          field: field,
+          order: order
         });
       }).bind(this));
     },
     componentDidMount: function() {
-      return this.getListings(this.state.page);
+      return this.getListings(this.state.page, this.state.field, this.state.order);
     },
-    handleClick: function(direction) {
+    onPageEvent: function(direction) {
+      var newPage;
       if (direction === 'Next') {
-        this.getListings(this.state.page + 1);
+        newPage = this.state.page + 1;
       } else if (direction === 'Previous' && this.state.page > 0) {
-        this.getListings(this.state.page - 1);
+        newPage = this.state.page - 1;
+      } else {
+        return;
       }
+      this.getListings(newPage, this.state.field, this.state.order);
+    },
+    onSortEvent: function(selectedField) {
+      var field, order;
+      if (selectedField !== this.state.field) {
+        order = this.state.order;
+        field = selectedField;
+      } else {
+        order = this.state.order * -1;
+        field = this.state.field;
+      }
+      this.getListings(this.state.page, field, order);
     },
     render: function() {
       return React.createElement("div", {
         "className": 'app'
       }, React.createElement("h1", null, "OneRent Listings"), React.createElement(ListingsTable, {
         "listings": this.state.listings,
-        "headings": this.state.headings
+        "headings": this.state.headings,
+        "onSortEvent": this.onSortEvent
       }), React.createElement(Arrows, {
-        "onClickEvent": this.handleClick,
+        "onPageEvent": this.onPageEvent,
         "page": this.state.page
       }));
     }
@@ -49,9 +71,11 @@
   ListingsTable = React.createClass({
     render: function() {
       var tableHeadings, tableRows;
-      tableHeadings = this.props.headings.map(function(heading) {
-        return React.createElement(ListingHeading, null, heading);
-      });
+      tableHeadings = this.props.headings.map((function(heading) {
+        return React.createElement(ListingHeading, {
+          "onSortEvent": this.props.onSortEvent
+        }, heading);
+      }).bind(this));
       tableRows = this.props.listings.map((function(listing) {
         return React.createElement(ListingRow, {
           "headings": this.props.headings
@@ -65,8 +89,13 @@
   });
 
   ListingHeading = React.createClass({
+    handleSortRequest: function(e) {
+      return this.props.onSortEvent(e.target.innerText);
+    },
     render: function() {
-      return React.createElement("th", null, this.props.children);
+      return React.createElement("th", {
+        "onClick": this.handleSortRequest
+      }, this.props.children);
     }
   });
 
@@ -87,8 +116,8 @@
   });
 
   Arrows = React.createClass({
-    handleClick: function(e) {
-      return this.props.onClickEvent(e.target.value);
+    handlePageRequest: function(e) {
+      return this.props.onPageEvent(e.target.value);
     },
     render: function() {
       return React.createElement("div", {
@@ -96,12 +125,12 @@
       }, React.createElement("input", {
         "type": 'button',
         "value": 'Previous',
-        "onClick": this.handleClick
+        "onClick": this.handlePageRequest
       }), React.createElement("input", {
         "type": 'button',
         "value": 'Next',
-        "onClick": this.handleClick
-      }), this.props.page);
+        "onClick": this.handlePageRequest
+      }), this.props.page + 1);
     }
   });
 
