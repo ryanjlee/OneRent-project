@@ -65,9 +65,16 @@ var ListingSchema = new mongoose.Schema({
 var Listing = mongoose.model('newclscrape', ListingSchema);
 
 app.get('/listings.json', function (req, res) {
+  var page = +req.query.page;
+  var size = +req.query.pageSize;
   Listing.find({}, function (err, listing) {
     if (err) return console.log(err);
-  }).limit(25).select('-body').exec(function (err, listing) {
+  })
+  .skip(page * size)
+  .limit(size)
+  .sort({_id: 1})
+  .exec(function (err, listing) {
+    if (err) console.log(err);
     res.send(listing);
   })
 });

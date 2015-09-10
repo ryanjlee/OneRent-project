@@ -1,49 +1,85 @@
 App = React.createClass
   getInitialState: ->
-    data: []
+    # headings: ['_id', 'body', 'type', 'replyUrl', 'url', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
+    headings: ['_id', 'type', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
+    listings: []
+    page: 0
 
-  componentDidMount: ->
-    $.get 'listings.json', ((data)->
-      this.setState data: data
-      # console.log data
+  getListings: (page) ->
+    tableData =
+      page: page
+      pageSize: 15
+    $.get 'listings.json', tableData, ((listings)->
+      this.setState
+        listings: listings
+        page: page
       return
     ).bind this
 
+  componentDidMount: ->
+    this.getListings(this.state.page)
+
   handleClick: (direction)->
-    console.log direction
+    if direction == 'Next'
+      this.getListings(this.state.page + 1)
+    else if direction == 'Previous' and this.state.page > 0
+      this.getListings(this.state.page - 1)
+    return
 
   render: ->
     <div className= 'app'>
       <h1>OneRent Listings</h1>
-      <Listings data= {this.state.data} />
-      <Arrows onClickEvent= {this.handleClick}/>
+      <ListingsTable listings= {this.state.listings} headings= {this.state.headings} />
+      <Arrows onClickEvent= {this.handleClick}  page= {this.state.page}/>
     </div>
 
 
-Listings = React.createClass
+ListingsTable = React.createClass
   render: ->
-    # headings = ['_id', 'body', 'type', 'replyUrl', 'url', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
-    headings = ['_id', 'type', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
-    
-    for heading in headings
-      $('#listings thead tr').append '<th>' + heading + '</th>'
+    tableHeadings = this.props.headings.map (heading) ->
+      <ListingHeading>
+        {heading}
+      </ListingHeading>
 
-    for listing in this.props.data
-      $('#listings tbody').append '<tr></tr>'
-      for heading in headings
-        $('#listings tbody tr:last-child').append '<td>' + listing[heading] + '</td>'
-
-    $("#listings").tablesorter(widgets: ['zebra'])
-
+    tableRows = this.props.listings.map ((listing) ->      
+      <ListingRow headings= {this.props.headings}>
+        {listing}
+      </ListingRow>
+    ).bind this
 
     <table id= 'listings' className= "tablesorter">
       <thead>
       <tr>
+        {tableHeadings}
       </tr>
       </thead>
       <tbody>
+        {tableRows}
       </tbody>
     </table>
+
+
+ListingHeading = React.createClass
+  render: ->
+    <th>{this.props.children}</th>
+
+
+ListingRow = React.createClass
+  render: ->
+    tableCells = this.props.headings.map ((heading) ->
+      <ListingCell>
+       {this.props.children[heading]}
+      </ListingCell>
+    ).bind this
+
+    <tr>
+     {tableCells}
+    </tr>
+
+
+ListingCell = React.createClass
+  render: ->
+    <td>{this.props.children}</td>
 
 
 Arrows = React.createClass
@@ -51,8 +87,9 @@ Arrows = React.createClass
     this.props.onClickEvent(e.target.value)
   render: ->
     <div className= 'buttons'>
-      <input type= 'button' value= 'Left' onClick= {this.handleClick} />
-      <input type= 'button' value= 'Right' onClick= {this.handleClick} />
+      <input type= 'button' value= 'Previous' onClick= {this.handleClick} />
+      <input type= 'button' value= 'Next' onClick= {this.handleClick} />
+      {this.props.page}
     </div>
 
 
