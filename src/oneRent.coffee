@@ -62,8 +62,10 @@ ListingsTable = React.createClass
       </ListingHeading>
     ).bind this
 
-    tableRows = this.props.listings.map ((listing) ->      
-      <ListingRow headings= {this.props.headings}>
+    tableRows = this.props.listings.map ((listing, index) ->
+      position = if (index % 2 != 0) then 'odd' else ''
+
+      <ListingRow position= {position} headings= {this.props.headings}>
         {listing}
       </ListingRow>
     ).bind this
@@ -102,7 +104,7 @@ ListingRow = React.createClass
       </ListingCell>
     ).bind this
 
-    <tr>
+    <tr className= {this.props.position}>
      {tableCells}
     </tr>
 
@@ -118,7 +120,7 @@ Arrows = React.createClass
 
   render: ->
     # {this.props.page + 1}
-    
+
     <div className= 'buttons'>
       <input type= 'button' value= 'Previous Page' onClick= {this.handlePageRequest} />
       <input type= 'button' value= 'Next Page' onClick= {this.handlePageRequest} />

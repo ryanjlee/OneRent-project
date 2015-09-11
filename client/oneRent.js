@@ -80,8 +80,11 @@
           "order": this.props.order
         }, heading);
       }).bind(this));
-      tableRows = this.props.listings.map((function(listing) {
+      tableRows = this.props.listings.map((function(listing, index) {
+        var position;
+        position = index % 2 !== 0 ? 'odd' : '';
         return React.createElement(ListingRow, {
+          "position": position,
           "headings": this.props.headings
         }, listing);
       }).bind(this));
@@ -115,7 +118,9 @@
       tableCells = this.props.headings.map((function(heading) {
         return React.createElement(ListingCell, null, this.props.children[heading]);
       }).bind(this));
-      return React.createElement("tr", null, tableCells);
+      return React.createElement("tr", {
+        "className": this.props.position
+      }, tableCells);
     }
   });
 
