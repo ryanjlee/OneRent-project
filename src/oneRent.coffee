@@ -27,9 +27,9 @@ App = React.createClass
     this.getListings(this.state.page, this.state.field, this.state.order)
 
   onPageEvent: (direction) ->
-    if direction == 'Next'
+    if direction == 'Next Page'
       newPage = this.state.page + 1
-    else if direction == 'Previous' and this.state.page > 0
+    else if direction == 'Previous Page' and this.state.page > 0
       newPage = this.state.page - 1
     else
       return
@@ -40,7 +40,7 @@ App = React.createClass
     if selectedField != this.state.field
       order = this.state.order
       field = selectedField
-    else
+    else 
       order = this.state.order * -1
       field = this.state.field
     this.getListings(this.state.page, field, order)
@@ -49,7 +49,7 @@ App = React.createClass
   render: ->
     <div className= 'app'>
       <h1>OneRent Listings</h1>
-      <ListingsTable listings= {this.state.listings} headings= {this.state.headings} onSortEvent= {this.onSortEvent}/>
+      <ListingsTable listings= {this.state.listings} headings= {this.state.headings} field= {this.state.field} order= {this.state.order} onSortEvent= {this.onSortEvent}/>
       <Arrows onPageEvent= {this.onPageEvent}  page= {this.state.page}/>
     </div>
 
@@ -57,7 +57,7 @@ App = React.createClass
 ListingsTable = React.createClass
   render: ->
     tableHeadings = this.props.headings.map ((heading) ->
-      <ListingHeading onSortEvent= {this.props.onSortEvent}>
+      <ListingHeading onSortEvent= {this.props.onSortEvent} field= {this.props.field} order= {this.props.order}>
         {heading}
       </ListingHeading>
     ).bind this
@@ -85,7 +85,11 @@ ListingHeading = React.createClass
     this.props.onSortEvent(e.target.innerText)
 
   render: ->
-    <th onClick= {this.handleSortRequest}>
+    if this.props.field == this.props.children
+      currentClass = if this.props.order > 0 then 'headerSortUp' else 'headerSortDown'
+    currentClass += ' header'
+
+    <th className= {currentClass} onClick= {this.handleSortRequest}>
       {this.props.children}
     </th>
 
@@ -113,10 +117,11 @@ Arrows = React.createClass
     this.props.onPageEvent(e.target.value)
 
   render: ->
+    # {this.props.page + 1}
+    
     <div className= 'buttons'>
-      <input type= 'button' value= 'Previous' onClick= {this.handlePageRequest} />
-      <input type= 'button' value= 'Next' onClick= {this.handlePageRequest} />
-      {this.props.page + 1}
+      <input type= 'button' value= 'Previous Page' onClick= {this.handlePageRequest} />
+      <input type= 'button' value= 'Next Page' onClick= {this.handlePageRequest} />
     </div>
 
 

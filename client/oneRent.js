@@ -34,9 +34,9 @@
     },
     onPageEvent: function(direction) {
       var newPage;
-      if (direction === 'Next') {
+      if (direction === 'Next Page') {
         newPage = this.state.page + 1;
-      } else if (direction === 'Previous' && this.state.page > 0) {
+      } else if (direction === 'Previous Page' && this.state.page > 0) {
         newPage = this.state.page - 1;
       } else {
         return;
@@ -60,6 +60,8 @@
       }, React.createElement("h1", null, "OneRent Listings"), React.createElement(ListingsTable, {
         "listings": this.state.listings,
         "headings": this.state.headings,
+        "field": this.state.field,
+        "order": this.state.order,
         "onSortEvent": this.onSortEvent
       }), React.createElement(Arrows, {
         "onPageEvent": this.onPageEvent,
@@ -73,7 +75,9 @@
       var tableHeadings, tableRows;
       tableHeadings = this.props.headings.map((function(heading) {
         return React.createElement(ListingHeading, {
-          "onSortEvent": this.props.onSortEvent
+          "onSortEvent": this.props.onSortEvent,
+          "field": this.props.field,
+          "order": this.props.order
         }, heading);
       }).bind(this));
       tableRows = this.props.listings.map((function(listing) {
@@ -93,7 +97,13 @@
       return this.props.onSortEvent(e.target.innerText);
     },
     render: function() {
+      var currentClass;
+      if (this.props.field === this.props.children) {
+        currentClass = this.props.order > 0 ? 'headerSortUp' : 'headerSortDown';
+      }
+      currentClass += ' header';
       return React.createElement("th", {
+        "className": currentClass,
         "onClick": this.handleSortRequest
       }, this.props.children);
     }
@@ -124,13 +134,13 @@
         "className": 'buttons'
       }, React.createElement("input", {
         "type": 'button',
-        "value": 'Previous',
+        "value": 'Previous Page',
         "onClick": this.handlePageRequest
       }), React.createElement("input", {
         "type": 'button',
-        "value": 'Next',
+        "value": 'Next Page',
         "onClick": this.handlePageRequest
-      }), this.props.page + 1);
+      }));
     }
   });
 

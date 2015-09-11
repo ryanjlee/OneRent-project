@@ -12,7 +12,6 @@ table.tablesorter thead tr th, table.tablesorter tfoot tr th {
   border: 1px solid #FFF;
   font-size: 8pt;
   padding: 4px;
-  min-width: 50px;
 }
 table.tablesorter thead tr .header {
   background-image: url(img/bg.gif);
