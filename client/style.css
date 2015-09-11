@@ -1,3 +1,14 @@
+html {
+  background-color: #eee;
+}
+#container {
+  background-color: #fff;
+  border-radius: 5px;
+  padding: 20px;
+}
+h1 {
+  text-align: center;
+}
 /* tables */
 table.tablesorter {
   font-family:arial;

@@ -5,7 +5,7 @@
   App = React.createClass({
     getInitialState: function() {
       return {
-        headings: ['_id', 'type', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id'],
+        headings: ['date', 'title', 'price', 'region', 'location', 'replyUrl', 'url', 'id'],
         listings: [],
         page: 0,
         field: '_id',
@@ -16,7 +16,7 @@
       var tableData;
       tableData = {
         page: page,
-        pageSize: 15,
+        pageSize: 20,
         field: field,
         order: order
       };
@@ -108,7 +108,7 @@
       return React.createElement("th", {
         "className": currentClass,
         "onClick": this.handleSortRequest
-      }, this.props.children);
+      }, this.props.children.toUpperCase());
     }
   });
 
@@ -116,7 +116,15 @@
     render: function() {
       var tableCells;
       tableCells = this.props.headings.map((function(heading) {
-        return React.createElement(ListingCell, null, this.props.children[heading]);
+        var text;
+        if (/url/ig.test(heading)) {
+          text = heading === 'replyUrl' ? 'Reply' : 'Listing';
+          return React.createElement(ListingCell, null, React.createElement("a", {
+            "href": this.props.children[heading]
+          }, text));
+        } else {
+          return React.createElement(ListingCell, null, this.props.children[heading]);
+        }
       }).bind(this));
       return React.createElement("tr", {
         "className": this.props.position
@@ -137,7 +145,7 @@
     render: function() {
       return React.createElement("div", {
         "className": 'buttons'
-      }, React.createElement("input", {
+      }, React.createElement("p", null, "Page ", this.props.page + 1), React.createElement("input", {
         "type": 'button',
         "value": 'Previous Page',
         "onClick": this.handlePageRequest

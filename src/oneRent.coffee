@@ -1,7 +1,7 @@
 App = React.createClass
   getInitialState: ->
     # headings: ['_id', 'body', 'type', 'replyUrl', 'url', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
-    headings: ['_id', 'type', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
+    headings: ['date', 'title', 'price', 'region', 'location', 'replyUrl', 'url', 'id']
     listings: []
     page: 0
     field: '_id'
@@ -10,7 +10,7 @@ App = React.createClass
   getListings: (page, field, order) ->
     tableData =
       page: page
-      pageSize: 15
+      pageSize: 20
       field: field
       order: order
 
@@ -92,16 +92,26 @@ ListingHeading = React.createClass
     currentClass += ' header'
 
     <th className= {currentClass} onClick= {this.handleSortRequest}>
-      {this.props.children}
+      {this.props.children.toUpperCase()}
     </th>
 
 
 ListingRow = React.createClass
   render: ->
     tableCells = this.props.headings.map ((heading) ->
-      <ListingCell>
-       {this.props.children[heading]}
-      </ListingCell>
+      if /url/ig.test heading
+        text = if heading == 'replyUrl' then 'Reply' else 'Listing'
+        return (
+          <ListingCell>
+            <a href= {this.props.children[heading]}>{text}</a>
+          </ListingCell>
+        )
+      else
+        return (
+          <ListingCell>
+            {this.props.children[heading]}
+          </ListingCell>
+        )
     ).bind this
 
     <tr className= {this.props.position}>
@@ -119,9 +129,9 @@ Arrows = React.createClass
     this.props.onPageEvent(e.target.value)
 
   render: ->
-    # {this.props.page + 1}
 
     <div className= 'buttons'>
+      <p>Page {this.props.page + 1}</p>
       <input type= 'button' value= 'Previous Page' onClick= {this.handlePageRequest} />
       <input type= 'button' value= 'Next Page' onClick= {this.handlePageRequest} />
     </div>

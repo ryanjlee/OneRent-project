@@ -2,19 +2,22 @@
 
 ## Instructions
 
-Install the command line tools
+Install the bower components, node modules, and command line tools
 
 ```sh
+bower install
+npm install
 npm install -g coffee-react-transform
 ```
 
-Then translate the cjsx file to coffee to js
+Translate the cjsx file to coffee to js
+(Latest compiled js file has been included for convenience)
 
 ```sh
 cjsx-transform src/oneRent.coffee | coffee -cs > client/oneRent.js
 ```
 
-Then run the server
+Run the server
 ```sh
 node server/server.js
 ```
