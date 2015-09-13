@@ -4,7 +4,8 @@
   "description": "",
   "main": "oneRent.js",
   "scripts": {
-    "start": "node server/server.js"
+    "start": "node server/server.js",
+    "postinstall": "bower install"
   },
   "dependencies": {
     "body-parser": "^1.13.3",
