@@ -5,7 +5,7 @@
   App = React.createClass({
     getInitialState: function() {
       return {
-        headings: ['date', 'title', 'price', 'region', 'location', 'replyUrl', 'url', 'id'],
+        headings: ['date', 'title', 'price', 'location', 'url', 'replyUrl'],
         listings: [],
         page: 0,
         field: '_id',
@@ -57,13 +57,17 @@
     render: function() {
       return React.createElement("div", {
         "className": 'app'
-      }, React.createElement("h1", null, "OneRent Listings"), React.createElement(ListingsTable, {
+      }, React.createElement("h1", null, "OneRent Listings"), React.createElement("div", {
+        "id": 'innerContainer'
+      }, React.createElement(ListingsTable, {
         "listings": this.state.listings,
         "headings": this.state.headings,
         "field": this.state.field,
         "order": this.state.order,
         "onSortEvent": this.onSortEvent
-      }), React.createElement(Arrows, {
+      }), React.createElement("div", {
+        "id": "map"
+      })), React.createElement(Arrows, {
         "onPageEvent": this.onPageEvent,
         "page": this.state.page
       }));
@@ -108,11 +112,17 @@
       return React.createElement("th", {
         "className": currentClass,
         "onClick": this.handleSortRequest
-      }, this.props.children.toUpperCase());
+      }, this.props.children);
     }
   });
 
   ListingRow = React.createClass({
+    requestLocation: function(e) {
+      var newLocation, position;
+      position = this.props.headings.indexOf('location');
+      newLocation = e.currentTarget.children[position].innerText.match(/^\w+(\s\w+)*(?= \/)?/)[0];
+      return initMap(newLocation);
+    },
     render: function() {
       var tableCells;
       tableCells = this.props.headings.map((function(heading) {
@@ -127,7 +137,8 @@
         }
       }).bind(this));
       return React.createElement("tr", {
-        "className": this.props.position
+        "className": this.props.position,
+        "onClick": this.requestLocation
       }, tableCells);
     }
   });

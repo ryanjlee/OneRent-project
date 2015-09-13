@@ -1,10 +1,26 @@
 html {
   background-color: #eee;
 }
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
 #container {
   background-color: #fff;
   border-radius: 5px;
   padding: 20px;
+}
+#innerContainer {
+  position: relative;
+}
+#map {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  height: 100%;
+  width: 30%;
+  margin: 0px auto;
 }
 h1 {
   text-align: center;
@@ -15,7 +31,7 @@ table.tablesorter {
   background-color: #CDCDCD;
   margin:10px 0pt 15px;
   font-size: 8pt;
-  width: 100%;
+  width: 70%;
   text-align: left;
 }
 table.tablesorter thead tr th, table.tablesorter tfoot tr th {

@@ -5,7 +5,7 @@ var bodyParser = require('body-parser');
 var app = express();
 var mongoose = require('mongoose');
 
-app.listen(3000);
+app.listen(process.env.PORT || 3000);
 
 app.use('/', express.static(path.join(__dirname, '/../client')));
 app.use('/bower_components',  express.static(__dirname + '/../bower_components'));

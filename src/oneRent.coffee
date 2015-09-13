@@ -1,7 +1,7 @@
 App = React.createClass
   getInitialState: ->
     # headings: ['_id', 'body', 'type', 'replyUrl', 'url', 'title', 'price', 'region', 'location', 'hasPic', 'date', 'id']
-    headings: ['date', 'title', 'price', 'region', 'location', 'replyUrl', 'url', 'id']
+    headings: ['date', 'title', 'price', 'location', 'url', 'replyUrl']
     listings: []
     page: 0
     field: '_id'
@@ -49,7 +49,10 @@ App = React.createClass
   render: ->
     <div className= 'app'>
       <h1>OneRent Listings</h1>
-      <ListingsTable listings= {this.state.listings} headings= {this.state.headings} field= {this.state.field} order= {this.state.order} onSortEvent= {this.onSortEvent}/>
+      <div id= 'innerContainer'>
+        <ListingsTable listings= {this.state.listings} headings= {this.state.headings} field= {this.state.field} order= {this.state.order} onSortEvent= {this.onSortEvent}/>
+        <div id= "map"></div>      
+      </div>
       <Arrows onPageEvent= {this.onPageEvent}  page= {this.state.page}/>
     </div>
 
@@ -92,11 +95,16 @@ ListingHeading = React.createClass
     currentClass += ' header'
 
     <th className= {currentClass} onClick= {this.handleSortRequest}>
-      {this.props.children.toUpperCase()}
+      {this.props.children}
     </th>
 
 
 ListingRow = React.createClass
+  requestLocation: (e)->
+    position = this.props.headings.indexOf('location')
+    newLocation = e.currentTarget.children[position].innerText.match(/^\w+(\s\w+)*(?= \/)?/)[0]
+    initMap(newLocation)
+
   render: ->
     tableCells = this.props.headings.map ((heading) ->
       if /url/ig.test heading
@@ -114,7 +122,7 @@ ListingRow = React.createClass
         )
     ).bind this
 
-    <tr className= {this.props.position}>
+    <tr className= {this.props.position} onClick= {this.requestLocation}>
      {tableCells}
     </tr>
 
@@ -129,7 +137,6 @@ Arrows = React.createClass
     this.props.onPageEvent(e.target.value)
 
   render: ->
-
     <div className= 'buttons'>
       <p>Page {this.props.page + 1}</p>
       <input type= 'button' value= 'Previous Page' onClick= {this.handlePageRequest} />

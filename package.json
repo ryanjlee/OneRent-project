@@ -3,11 +3,17 @@
   "version": "1.0.0",
   "description": "",
   "main": "oneRent.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
   "dependencies": {
     "body-parser": "^1.13.3",
     "express": "^4.13.3",
     "mongodb": "^2.0.42",
     "mongoose": "^4.1.5"
+  },
+  "engines": {
+    "node": "0.12.7"
   },
   "devDependencies": {},
   "repository": {
